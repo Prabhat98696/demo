@@ -1,0 +1,55 @@
+<%-- Copyright (c) 2002 PTC Inc.   All Rights Reserved --%>
+<%
+	StringBuffer attName = new StringBuffer();
+	String displayName = null;
+	String objName = (String) request.getParameter("searchLabel");
+	String sampleTypeName = (String) request.getParameter("flexTypeName");
+
+	String quickSearchLbl = WTMessage.getLocalizedMessage ( "com.lcs.wc.resource.QuickSearchRB", "quick_Search_LBL",RB.objA ) ;
+	
+	if(objName == null || "null".equalsIgnoreCase(objName)){
+		objName = (String) request.getParameter("objectType");
+	}		
+	if(objName!=null){
+		objName = objName.replaceAll("\\s", "");
+	}
+	if(sampleTypeName!=null && sampleTypeName.contains("Sample")){
+		objName = sampleTypeName.replaceAll("\\\\", "");
+	}
+	
+	String configurableAttributes = LCSProperties.get("jsp.main.header.quickSearchAttributes." + objName);	
+	
+	if (configurableAttributes != null && !"".equalsIgnoreCase(configurableAttributes)) {
+
+		StringTokenizer attKeys = new StringTokenizer(configurableAttributes, ",");
+
+		while (attKeys.hasMoreTokens()) {
+			String attKey = attKeys.nextToken();
+			FlexTypeAttribute attribute = null;
+			try {
+				attribute = (FlexTypeAttribute) flexType.getAttribute(attKey);
+				if(attKey.equals("agrMaterialRefNumber")){
+					attName.append("Comma-separated agron Ref#"+", ");
+				} 
+				else {
+					attName.append((String) attribute.getAttDisplay()+", ");
+				}
+			} catch (WTException e) {
+			}
+		}
+		attName.deleteCharAt(attName.lastIndexOf(","));
+		displayName = attName.toString();
+	}
+%>
+<div id='quickSearchDisplay'>
+	<%=tg.startGroupBorder()%>
+	<%=tg.startTable()%>
+	<%=tg.startGroupTitle()%><%=quickSearchLbl%><%=tg.endTitle()%>
+	<%=tg.startGroupContentTable()%>
+	<col width="15%"></col>
+	<%=fg.createTextInput("quickSearchCriteria", quickSearchLbl,
+					request.getParameter("quickSearchCriteria"), "", 25, 210, false, false, displayName)%>
+	<%=tg.endContentTable()%>
+	<%=tg.endTable()%>
+	<%=tg.endBorder()%>
+</div>

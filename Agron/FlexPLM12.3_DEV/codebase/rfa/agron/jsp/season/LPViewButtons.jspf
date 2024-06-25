@@ -1,0 +1,102 @@
+<%
+
+   String viewsLabel = WTMessage.getLocalizedMessage ( RB.REPORTS, "views_LBL",RB.objA ) ;
+   String viewNoAvailLabel = wt.util.WTMessage.getLocalizedMessage ( RB.REPORTS, "viewsNotAvailable_LBL",RB.objA ) ;
+   String updateTableLayoutMouseOver = WTMessage.getLocalizedMessage ( RB.REPORTS, "updateTableLayoutMoueseOver_TOOLTIP",RB.objA ) ;
+   String createNewTableLayoutMouseOver = WTMessage.getLocalizedMessage ( RB.REPORTS, "createNewTableLayoutMouseOver_TOOLTIP",RB.objA ) ;
+   String pinSelectedViewMouseOver = WTMessage.getLocalizedMessage ( RB.REPORTS, "pinSelectedView_TOOLTIP",RB.objA ) ;
+   String maxPinnedViewReachedMouseOver = WTMessage.getLocalizedMessage ( RB.REPORTS, "maxPinnedViewReached_TOOLTIP",RB.objA ) ;
+
+   String maxPinnedView = LCSProperties.get("com.lcs.wc.reports.pinnedViews.maxViews","8");
+   int maxViews = FormatHelper.parseInt(maxPinnedView);
+
+   String disablePinnedView="";
+   Collection<PinnedColumnList> pinnedViewsCol  = lcsContext.viewCache.getPinnedViews(FormatHelper.getObjectId(flexType), request.getParameter("activity"));
+
+ 	if(pinnedViewsCol.size()>=maxViews){
+		disablePinnedView="onclick='return false'";
+		pinSelectedViewMouseOver=maxPinnedViewReachedMouseOver;
+	}
+//Lookup what views are available
+    String activity = request.getParameter("activity");
+    Collection reportColumns = lcsContext.viewCache.getViews(FormatHelper.getObjectId(flexType), activity);
+    //Collection reportColumns = (new ReportQuery()).findReportViews(flexType, lcsContext.getUser(), activity);
+    HashMap columnOptions = null;
+    if(reportColumns != null && reportColumns.size() > 0){
+        columnOptions = new HashMap();
+        Iterator ci = reportColumns.iterator();
+        FlexObject fobj;
+        while(ci.hasNext()){
+            fobj = (FlexObject)ci.next();
+            columnOptions.put("OR:com.lcs.wc.report.ColumnList:" + fobj.getString("COLUMNLIST.IDA2A2"), fobj.getString("COLUMNLIST.DISPLAYNAME"));
+        }
+    }
+
+//Prepare current view
+    boolean useViews = true;
+    ColumnList view = null;
+    Collection attributes = null;
+
+    String viewId = request.getParameter("viewId");
+
+    if(request.getAttribute("viewIdOverride") != null){
+        viewId = (String) request.getAttribute("viewIdOverride");
+    }
+
+    if(FormatHelper.hasContent((String)linePlanConfig.get(pTypeName, "viewId"))){
+        viewId = (String)linePlanConfig.get(pTypeName, "viewId");
+    }
+
+    //("VIEW_LINE_PLAN".equals(request.getParamter("activity")) && " ".equals(viewId))
+    if(FormatHelper.hasContent(viewId)){
+        try {
+
+            view = lcsContext.viewCache.getView(viewId);
+            attributes = view.getAttributes();
+        } catch (wt.util.WTRuntimeException e){
+           // logger.debug("Request was made to view non existent view");
+        }
+    }
+    else if(!" ".equals(viewId)){
+        //Lookup default view
+        viewId = lcsContext.viewCache.getDefaultViewId(FormatHelper.getObjectId(flexType), activity);
+        if(FormatHelper.hasContent(viewId)){
+            try {
+
+                view = lcsContext.viewCache.getView(viewId);
+                attributes = view.getAttributes();
+            } catch (wt.util.WTRuntimeException e){
+               // logger.debug("Request was made to view non existent view");
+            }
+        }
+    }
+%>
+    <td>
+        <table>
+            <tr>
+              <td class="LABEL" nowrap><%
+                  if(useViews && !chooser) {
+                     if(columnOptions != null && columnOptions.size() > 0) {
+                       %><%= viewsLabel %>:&nbsp;&nbsp;&nbsp;
+                        <%= fg.createDropDownList(columnOptions, "viewId", viewId, "changeView(this)") %>
+                        <% if((useUpdate || view != null ) && !lcsContext.isVendor){ %>
+                            <a id="ViewButton2" onmouseover="return overlib('<%= FormatHelper.formatJavascriptString(updateTableLayoutMouseOver) %>');" onmouseout="return nd();" href="javascript:updateView()"><img style="vertical-align:bottom" border="0" src="<%=WT_IMAGE_LOCATION%>/customize_tablebutton.gif"></a>
+                        <% } %>
+                    <% } else {
+                      %><%= viewNoAvailLabel %>
+                        <input type="hidden" id="viewId" value="">
+                    <% } %>
+					
+					
+					<% if( !lcsContext.isVendor ) { %>
+					
+							<a id="ViewButton" onmouseover="return overlib('<%= FormatHelper.formatJavascriptString(createNewTableLayoutMouseOver) %>');" onmouseout="return nd();" href="javascript:newView()"><img style="vertical-align:bottom" border="0" src="<%=WT_IMAGE_LOCATION%>/object_new.png"></a>
+					<% } %>
+					<% if(view != null){ %>
+                            <a id="pinViewButton" onmouseover="return overlib('<%= FormatHelper.formatJavascriptString(pinSelectedViewMouseOver) %>');" onmouseout="return nd();" href="javascript:pinSelectedView('<%=viewId%>')" <%=disablePinnedView%>><img border="0" style="vertical-align:bottom" width="15" src="<%=URL_CONTEXT%>/images/pushpin_16x16_2.png"></a>
+                     <% } %>
+               <% } %>
+           </td>
+        </tr>
+    </table>
+   </td>

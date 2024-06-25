@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+		"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+		"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.connection.driver_class">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>
+
+      <property name="hibernate.connection.url">jdbc:sqlserver://HQ-FLEXDB-K-SQL.noc.agron.com:1433;databaseName=datawarehouse;user=sa;password=w1ndCh1ll</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</property> 
+ 
+   		 <!-- use 'create' to Create tables on application startup else use 'update'-->
+    	<property name="hbm2ddl.auto">update</property>
+		<property name="use_sql_comments">false</property>
+		       <property name="show_sql">false</property>
+ 	 	 <property name="format_sql">false</property>
+   	 <!-- JDBC connection pool -->
+    	<property name="connection.pool_size">5</property>
+   		 <property name="current_session_context_class">thread</property>
+
+		  <property name="hibernate.c3p0.min_size">5</property>
+		  <property name="hibernate.c3p0.max_size">20</property>
+		  <property name="hibernate.c3p0.timeout">1800</property>
+		   <property name="hibernate.c3p0.validate">1800</property>
+		  <property name="hibernate.c3p0.max_statements">500</property>
+		  <property name="hibernate.c3p0.idle_test_period">3000</property>
+        
+
+ 
+     <!-- Domain Model classes to be mapped -->
+   		 <mapping class="com.agron.wc.integration.dw.model.PTCSeason" />
+		 <mapping class="com.agron.wc.integration.dw.model.PTC_Model_Staging" /> 
+		 <mapping class="com.agron.wc.integration.dw.model.PTC_ModelSeason_Staging" /> 
+		 <mapping class="com.agron.wc.integration.dw.model.PTC_Vendor_Staging" /> 
+		 <mapping class="com.agron.wc.integration.dw.model.PTC_ModelSeasonVendor_Staging" /> 
+		 <mapping class="com.agron.wc.integration.dw.model.PTC_Colorway_Staging" />
+		 <mapping class="com.agron.wc.integration.dw.model.PTC_ColorwaySeason_Staging" />
+		 <mapping class="com.agron.wc.integration.dw.model.PTC_Size_Staging" />
+		 <mapping class="com.agron.wc.integration.dw.model.PTC_SizeSeasonVendor_Staging" />
+		 <mapping class="com.agron.wc.integration.dw.model.PTC_LoadHistory" />
+		 
+    </session-factory>
+</hibernate-configuration>

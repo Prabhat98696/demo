@@ -1,0 +1,289 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="ant2html.xsl"?>
+
+<!-- Build script for Agron FlexPLM project by Prashant NM (Acnovate Corp) -->
+
+<!-- Written to assume that classpath is rooted      -->
+<!-- in the parent directory. That is, the Source directory.  -->
+
+<project basedir="." default="build" name="FlexPLM11">
+  <property environment="env" />
+
+
+  <!-- *************************************************************************** -->
+  <!-- Initialization Tasks - Tasks to set variables and clean the system          -->
+  <!-- *************************************************************************** -->
+  <property name="codebase" value="${env.WT_HOME}/codebase" />
+  <property name="javaclass" value="${env.WT_HOME}/codebase/agrProperties" />
+  <property name="loadFiles" value="${env.WT_HOME}/loadFiles" />
+  <property name="target" value="8" />
+  <property name="source" value="8" />
+  <property name="dist"  location="dist" />
+  <property name="buildLogs" value="${env.WT_HOME}/codebase/com/agron/build/logs"/>
+
+  <!-- Set classpath -->
+  <path id="FlexPLM11_Java.classpath">
+    <pathelement path="${env.WT_HOME}/codebase"/>
+    <pathelement location="bin" />
+    <!-- codebase -->
+    <fileset dir="${env.WT_HOME}/lib">
+      <!-- include all windchill libs -->
+      <include name="**/*.jar"/>
+    </fileset>
+    <fileset dir="${env.WT_HOME}/codebase/WEB-INF/lib">
+      <!-- include all windchill libs -->
+      <include name="**/*.jar"/>
+    </fileset>
+    <fileset dir="${env.WT_HOME}/srclib">
+      <!-- include all windchill libs -->
+      <include name="**/*.jar"/>
+    </fileset>
+    <fileset dir="${env.WT_HOME}/srclib/wnc">
+      <!-- include all windchill libs -->
+      <include name="**/*.jar"/>
+    </fileset>
+    <fileset dir="${env.WT_HOME}/srclib/tool">
+      <!-- include all windchill libs -->
+      <include name="**/*.jar"/>
+    </fileset>
+    <fileset dir="${env.WT_HOME}/srclib/prowt">
+      <!-- include all windchill libs -->
+      <include name="**/*.jar"/>
+    </fileset>
+  </path>
+
+  <taskdef resource="net/sf/antcontrib/antlib.xml" >
+    <classpath>
+      <pathelement location="${antcontrib}" />
+    </classpath>
+  </taskdef>
+
+  <!-- Initialize build property values -->
+  <target name="init" description="Initialize">
+    <!-- Read user/machine specific properties from file -->
+    <property file="build.properties"/>
+    <mkdir dir="${env.WT_HOME}/codebase/com/agron/build/logs"/>
+
+    <mkdir dir="dist" />
+    <!-- Read in environment variables -->
+    <property environment="env"/>
+    <mkdir dir="${env.WT_HOME}/patches"/>
+  </target>
+
+
+  <target name="build" depends="init,compile,copy" />
+<mkdir dir="${env.WT_HOME}/codebase/agrProperties" />
+  <target name="compile"  depends="init">
+    <echo message="${ant.project.name}: ${ant.file}" />
+    <javac debug="true" debuglevel="lines,vars,source" destdir="${javaclass}" source="${source}" target="${target}" includeantruntime="true">
+      <src path="../src/com" />
+      <classpath refid="FlexPLM11_Java.classpath" />
+    </javac>
+  </target>
+
+  <target name="copy" depends="init">
+
+    <copy todir="${env.WT_HOME}/codebase/agrProperties/codebase/rfa" overwrite="true">
+      <fileset dir="../codebase/rfa" includes="**/*.*" />
+    </copy>
+
+	<copy todir="${env.WT_HOME}/codebase/agrProperties/codebase" overwrite="true">
+      <fileset dir="../codebase" includes="agron.interface.properties"/>
+	  <fileset dir="../codebase" includes="agron.plugins.properties"/>
+	  <fileset dir="../codebase" includes="attributesTransfer.properties"/>
+	  <fileset dir="../codebase" includes="seasonChangeLog.properties"/>
+	  <fileset dir="../codebase" includes="custom.agron.properties"/>
+	  <fileset dir="../codebase" includes="custom.lcs.advCopy.properties"/>
+	  <fileset dir="../codebase" includes="custom.lcs.extJsColumnConfigs.properties"/>
+	  <fileset dir="../codebase" includes="custom.lcs.properties"/>
+	  <fileset dir="../codebase" includes="ProductSpecification2.properties"/>
+	  <fileset dir="../codebase" includes="PDFFormat.properties"/>
+	  <fileset dir="../codebase" includes="ProductSpecificationBOM2.properties"/>
+	  <fileset dir="../codebase" includes="custom.VendorPortal.properties"/>
+	  <fileset dir="../codebase" includes="hibernate.cfg.xml"/>	  
+    </copy>
+	
+    <copy todir="${env.WT_HOME}/codebase/agrProperties" overwrite="true">
+      <fileset dir="../codebase" includes="dev.unique.server.properties,qa.unique.server.properties,prod.unique.server.properties"/>
+    </copy>
+	
+	<copy todir="${env.WT_HOME}/codebase/agrProperties/codebase/changeTracking" overwrite="true">
+      <fileset dir="../codebase/changeTracking" includes="changeTracking.xml" />
+    </copy>
+	
+	<copy todir="${env.WT_HOME}/codebase/agrProperties/codebase/conf" overwrite="true">
+      <fileset dir="../conf" includes="queryBuilderMethods.xml" />
+    </copy>
+	
+	<copy todir="${env.WT_HOME}/codebase/agrProperties/codebase/WEB-INF" overwrite="true">
+      <fileset dir="../codebase/WEB-INF" includes="log4jMethodServer.properties" />
+    </copy>
+	
+    <copy todir="${env.WT_HOME}/codebase/agrProperties/codebase/com/lcs/wc/client/web" overwrite="true">
+      <fileset dir="../codebase/com/lcs/wc/client/web" includes="custom.controllerAliases.properties" />
+      <fileset dir="../codebase/com/lcs/wc/client/web" includes="custom.urlMappings.properties" />
+      <fileset dir="../codebase/com/lcs/wc/client/web" includes="custom.clientSidePluginManagerMappings.properties" />
+    </copy>
+	
+    <copy todir="${env.WT_HOME}/codebase/agrProperties/codebase/com/lcs/wc/client" overwrite="true">
+      <fileset dir="../codebase/com/lcs/wc/client" includes="custom.activityControllerMappings.properties" />
+    </copy>
+	<!-- 
+    <copy todir="${env.WT_HOME}/codebase/changeTracking" overwrite="true">
+      <fileset dir="../codebase/changeTracking" includes="changeTracking.xml" />
+    </copy>
+	-->
+    <mkdir dir="${env.WT_HOME}/codebase/agrProperties/codebase/com/agron/build"/>
+    <copy todir="${env.WT_HOME}/codebase/agrProperties/codebase/com/agron/build" overwrite="true">
+      <fileset dir="." includes="build.xml"/>
+      <fileset dir="." includes="example.build.properties"/>
+    </copy>
+	
+  </target>
+
+  <target name="clean">
+    <delete dir="${env.WT_HOME}/codebase/com/agron" />
+    <delete dir="${env.WT_HOME}/codebase/rfa/agron" />
+
+  </target>
+
+	<target name="onetime_copyfiles">
+		<copy todir="${env.WT_HOME}/codebase/WEB-INF/lib" overwrite="true">
+			<fileset dir="../codebase/WEB-INF/agronlib" includes="**/*.jar" />
+		</copy> 
+		<!-- Add bat files too  -->
+	</target>
+    
+  <!-- *************************************************************************** -->
+  <!-- For Build Deploy cmd          -->
+  <!-- *************************************************************************** -->
+  
+  <target name="deployBuild">
+    <echo message="Started Deploying build "/>
+    <timestampselector property="latest.buildjar">
+      <path>
+        <fileset dir="${env.WT_HOME}/agronReleases">
+          <include name="AGRON_FlexPLM_11.1-*" />
+        </fileset>
+      </path>
+    </timestampselector>
+    <echo message="Latest agron Build file is - ${latest.buildjar}" />
+    <unzip src="${latest.buildjar}" dest="${env.WT_HOME}/agronReleases/temp"/>
+    <copy todir="${env.WT_HOME}/codebase" overwrite="true">
+      <fileset dir="${env.WT_HOME}/agronReleases/temp/codebase/agrProperties/codebase"/>
+    </copy>
+
+    <copy todir="${env.WT_HOME}/codebase/com/" overwrite="true">
+      <fileset dir="${env.WT_HOME}/agronReleases/temp/codebase/agrProperties/com/"/>
+    </copy>
+
+	<copy todir="${env.WT_HOME}/codebase/changeTracking" overwrite="true">
+      <fileset dir="${env.WT_HOME}/agronReleases/temp/codebase/agrProperties/codebase/changeTracking/"/>
+    </copy>
+
+	<copy todir="${env.WT_HOME}/conf" overwrite="true">
+      <fileset dir="${env.WT_HOME}/agronReleases/temp/codebase/agrProperties/codebase/conf" includes="queryBuilderMethods.xml"/>
+    </copy>
+	
+	<copy todir="${env.WT_HOME}/codebase/WEB-INF" overwrite="true">
+      <fileset dir="${env.WT_HOME}/agronReleases/temp/codebase/agrProperties/codebase/WEB-INF" includes="log4jMethodServer.properties"/>
+    </copy>
+	
+	<copy todir="${env.WT_HOME}/conf" overwrite="true">
+      <fileset dir="${env.WT_HOME}/agronReleases/temp/codebase/agrProperties/codebase/conf" includes="queryBuilderMethods.xml"/>
+    </copy>
+   <!-- Custom property  -->
+    <echo message="!!!!!!!!!!!!!START!!!!!!!!!!!!!!!!!!!!!!"/>
+    <echo message="'dev' for Dev [default value]"/>
+    <echo message="'qa' for Qa"/>
+    <echo message="'prod' for Production"/>
+    <echo message="!!!!!!!!!!!!END!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"/>
+	
+	<input
+			message="*****************Enter which unique.server.properties file to use for the target environment: *********************"
+			validargs="dev,qa,prod"
+			addproperty="deploy.target.env"
+			defaultvalue="dev"
+		/>
+	<echo message="Starting Agron Unique file copy..."/>
+	<echo message="------------------------------"/>	
+		<copy tofile="${codebase}/unique.server.properties" overwrite="true">
+			<fileset dir="${env.WT_HOME}/agronReleases/temp/codebase/agrProperties" includes="${deploy.target.env}.unique.server.properties"/>
+		</copy>
+	<echo message="Successfully Copied Agron Unique file to codebase..."/>	
+	
+	<delete dir="${env.WT_HOME}/agronReleases/temp"/>
+	<delete dir="${env.WT_HOME}/codebase/agrProperties"/>
+    <echo message="Completed Deploying Agron build"/>
+  </target>
+
+  <!-- *************************************************************************** -->
+  <!-- For Build Jar cmd          -->
+  <!-- *************************************************************************** --> 
+  
+  <target name="buildJar" depends="init,build" description="generate the distribution jar for Agron build" >
+    <mkdir dir="${dist}"/>
+    <tstamp>
+      <format property="current_time" pattern="yyyyMMdd_HHmmss"/>
+    </tstamp>
+    <zip zipfile="${dist}/AGRON_FlexPLM_11.1-${current_time}.zip" basedir="${env.WT_HOME}"
+       includes="
+				 codebase/agrProperties/codebase/com/agron/**,	
+				 codebase/agrProperties/com/**,				 
+				 codebase/agrProperties/codebase/rfa/**,
+				 codebase/agrProperties/codebase/com/**,
+				 codebase/agrProperties/codebase/agron.interface.properties,
+				 codebase/agrProperties/codebase/agron.plugins.properties,
+				 codebase/agrProperties/codebase/seasonChangeLog.properties,
+				 codebase/agrProperties/codebase/attributesTransfer.properties,
+				 codebase/agrProperties/codebase/custom.agron.properties,
+				 codebase/agrProperties/codebase/custom.lcs.advCopy.properties,
+				 codebase/agrProperties/codebase/custom.lcs.extJsColumnConfigs.properties,
+				 codebase/agrProperties/codebase/custom.lcs.properties,
+				 codebase/agrProperties/codebase/ProductSpecification2.properties,
+				 codebase/agrProperties/codebase/PDFFormat.properties,
+				 codebase/agrProperties/codebase/ProductSpecificationBOM2.properties,
+				 codebase/agrProperties/dev.unique.server.properties,
+ 				 codebase/agrProperties/qa.unique.server.properties,
+				 codebase/agrProperties/prod.unique.server.properties,
+				 codebase/agrProperties/codebase/com/lcs/wc/client/web/custom*properties,
+				 codebase/agrProperties/codebase/changeTracking/changeTracking.xml,
+				 codebase/agrProperties/codebase/conf/queryBuilderMethods.xml,
+	        	 codebase/agrProperties/codebase/com/lcs/wc/client/custom*properties,
+				 codebase/agrProperties/codebase/custom.VendorPortal.properties,
+				 codebase/agrProperties/codebase/hibernate.cfg.xml,
+				 codebase/agrProperties/codebase/WEB-INF/log4jMethodServer.properties"/>
+  </target>
+  
+  <!-- *************************************************************************** -->
+	<!-- Server Management Tasks - These tasks start and stop Windchill   -->
+	<!-- *************************************************************************** -->
+
+	<!-- Start WindChill Server Manager which starts Method Server -->
+	<target name="startwc" depends="init" description="Start WindChill Server Manager which starts Method Server">
+        <record name="${logfile}" action="start" append="${appendtolog}" />
+		<exec dir="${wthome}" executable="cmd" spawn="false" vmlauncher="false">
+			<arg line="/c net start Windchill"/>
+		</exec>
+        <record name="${logfile}" action="stop"/>
+	</target>
+
+	<!-- Stops WindChill server manager -->
+	<target name="stopwc" depends="init" description="Stops Windchill server manager">
+        <record name="${logfile}" action="start" append="${appendtolog}" />
+		<exec dir="${wthome}" executable="cmd" spawn="false" vmlauncher="false">
+			<arg line="/c net stop Windchill"/>
+		</exec>
+        <record name="${logfile}" action="stop"/>
+	</target>
+
+	<!-- Clears Tomcat Cache -->
+	<target name="DeleteTomcatCache" depends="init" description="Deleting Tomcat Cache.">
+	    <record name="${logfile}" action="start" append="${appendtolog}" loglevel="${logginglevel}"/>
+		<delete quiet="true" includeEmptyDirs="true">
+			<fileset dir="${env.TOMCAT_HOME}\instances"/>
+		</delete>
+	</target>
+	
+</project>
+

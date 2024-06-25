@@ -1,0 +1,19 @@
+##################  THIS FILE SHOULD CONTAIN ALL THE COLUMNS WHICH WE ARE ADDING AFTER THE UPGRADE. 
+###########  DO NOT INCREMENT THE NUMBER OF CHANGE THE EXISTING COMMANDS, APPEND TO THIS FILE
+
+AddColumns -a com.lcs.wc.product.LCSProduct Long=1 String=10
+AddColumns -a com.lcs.wc.season.LCSProductSeasonLink Boolean=1 Long=1
+AddColumns -a com.lcs.wc.product.LCSSKU ObjectReference=2
+AddColumns -a com.lcs.wc.moa.LCSMOAObject String=5 Long=10 Double=4
+AddColumns -a -f com.lcs.wc.sourcing.LCSProductCostSheet Double=103 Long=56
+AddColumns -a com.lcs.wc.material.LCSMaterial Long=2
+AddColumns -a -f com.lcs.wc.material.LCSMaterialSupplier VersionReference=1
+AddColumns -a com.lcs.wc.season.LCSSKUSeasonLink Boolean=3
+AddColumns -u
+
+
+
+cd <Windchill>/codebase ant -f MakeJar.xml
+
+-------------------------------------------
+AddColumns -SyncFromDB  ONLY FOR CLUSTER AND REHOST
